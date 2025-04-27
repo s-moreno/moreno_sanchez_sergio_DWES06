@@ -1,86 +1,63 @@
 package birt.smoreno.dwes06.services;
 
-import birt.smoreno.dwes06.dto.CategoryResponseDTO;
-import birt.smoreno.dwes06.entities.CategoryEntity;
-import birt.smoreno.dwes06.mappers.CategoryMapper;
-import birt.smoreno.dwes06.repositories.CategoryRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
+import birt.smoreno.dwes06.dto.CategoryResponseDTO;
+import birt.smoreno.dwes06.entities.CategoryEntity;
+
 /**
- * {@code CategoryService} es una clase de servicio que gestiona la lógica de negocio relacionada con las categorías
- * en la aplicación.
+ * {@code CategoryService} es una interfaz que define los métodos necesarios
+ * para gestionar la lógica de negocio relacionada con las categorías en la
+ * aplicación.
  * <p>
- * Esta clase proporciona métodos para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre las
- * categorías. Utiliza {@link CategoryRepository} para interactuar con la base de datos y realizar las operaciones
- * CRUD sobre la entidad {@link CategoryEntity}.
+ * Esta interfaz proporciona métodos para realizar operaciones CRUD (Crear,
+ * Leer, Actualizar, Eliminar) sobre las categorías.
  * </p>
- * <p>
- * Además, {@code CategoryService} hace uso de {@link CategoryMapper} para convertir entre las entidades {@link CategoryEntity}
- * y los DTOs (Data Transfer Objects) utilizados en la API {@link CategoryResponseDTO}.
- * Esto permite separar la lógica de acceso a datos de la lógica de presentación.
- * </p>
- * <p>
- * En resumen, {@code CategoryService} se encarga de la lógica de negocios para las operaciones relacionadas con las
- * categorías y sirve como intermediario entre el controlador y el repositorio, asegurando que los datos sean manejados
- * correctamente antes de ser enviados a la base de datos o al cliente.
- * </p>
- * 
  */
-@Service
-public class CategoryService {
+public interface CategoryService {
 
-    // Instanciar el repositorio de categorías para ser utilizado en los métodos de la clase
-    private final CategoryRepository categoryRepository;
-    // Instanciar el mapper para convertir entre entidades y DTOs
-    private final CategoryMapper productMapper;
+	/**
+	 * Obtiene todas las categorías.
+	 * 
+	 * @return Una lista de {@link CategoryResponseDTO} que representan todas las
+	 *         categorías.
+	 */
+	List<CategoryResponseDTO> getAllCategories();
 
-    // Constructor que inyecta el repositorio de categorías
-    // Se podría usar @Autowired, pero está desaconsejado.
-    public CategoryService(CategoryRepository categoryRepository, CategoryMapper productMapper) {
-        this.categoryRepository = categoryRepository;
-        this.productMapper = productMapper;
-    }
+	/**
+	 * Obtiene una categoría por su ID.
+	 * 
+	 * @param id El ID de la categoría que se desea obtener.
+	 * @return Un {@link CategoryResponseDTO} que representa la categoría.
+	 */
+	Optional<CategoryResponseDTO> getCategoryById(int id);
 
-    // Obtener todas las categorías
-    public List<CategoryResponseDTO> getAllCategories() {
-        List<CategoryEntity> categories = categoryRepository.findAll();
-        return categories.stream()
-                .map(productMapper::toResponseDTO) // Convertir cada CategoryEntity a CategoryResponseDTO
-                .toList();
-    }
+	/**
+	 * Crea una nueva categoría.
+	 * 
+	 * @param category Un objeto {@link CategoryEntity} que contiene los datos de la
+	 *                 categoría a crear.
+	 * @return Un {@link CategoryResponseDTO} que representa la categoría creada.
+	 */
+	CategoryResponseDTO createCategory(CategoryEntity category);
 
-    // Obtener una categoría por su ID
-    public Optional<CategoryResponseDTO> getCategoryById(int id) {
-        return categoryRepository.findById(id)
-                .map(productMapper::toResponseDTO);
-    }
+	/**
+	 * Actualiza una categoría existente.
+	 * 
+	 * @param id       El ID de la categoría que se desea actualizar.
+	 * @param category Un objeto {@link CategoryEntity} con los nuevos datos de la
+	 *                 categoría.
+	 * @return Un {@link CategoryResponseDTO} que representa la categoría
+	 *         actualizada.
+	 */
+	Optional<CategoryResponseDTO> updateCategory(int id, CategoryEntity category);
 
-    // Crear una nueva categoría
-    public CategoryResponseDTO createCategory(CategoryEntity category) {
-        CategoryEntity createdCategory = categoryRepository.save(category);
-        return productMapper.toResponseDTO(createdCategory);
-    }
-
-    // Actualizar una categoría existente
-    public Optional<CategoryResponseDTO> updateCategory(int id, CategoryEntity category) {
-        if (categoryRepository.existsById(id)) {
-            category.setId(id);
-            CategoryEntity updatedCategory = categoryRepository.save(category);
-            return Optional.of(productMapper.toResponseDTO(updatedCategory));
-        }
-        return Optional.empty();
-    }
-
-    // Eliminar una categoría por su ID
-    public Optional<CategoryResponseDTO> deleteCategory(int id) {
-        Optional<CategoryEntity> deletedCategory = categoryRepository.findById(id);
-        if (deletedCategory.isEmpty()) {
-            return Optional.empty();
-        }
-        categoryRepository.deleteById(id);
-        return Optional.of(productMapper.toResponseDTO(deletedCategory.get()));
-    }
+	/**
+	 * Elimina una categoría existente.
+	 * 
+	 * @param id El ID de la categoría que se desea eliminar.
+	 * @return Un {@link CategoryResponseDTO} que representa la categoría eliminada.
+	 */
+	Optional<CategoryResponseDTO> deleteCategory(int id);
 }
