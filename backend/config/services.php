@@ -14,6 +14,7 @@ return [
     |
     */
 
+    // URL del microservicio realizado en Spring Boot para la gestión de categorías y productos
     'stock_api_url' => env('STOCK_API_URL'),
 
     'postmark' => [
